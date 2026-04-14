@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import yfinance as yf
 
-# .envファイルから環境変数を読み込む
+# .envファイルから環境変数の読み込み
 load_dotenv()
 
 app = FastAPI()
@@ -26,7 +26,7 @@ async def get_weather():
     url = WEATHER_URL + "?lat="+LAT+"&lon="+LON+"&appid="+API_KEY+"&units=metric&lang=ja"
     print("APIリクエスト開始: URL = "+url)
     
-    # weather変数の初期化 (エラー発生時のデフォルト値)
+    # weather変数の初期化
     weather = {
         "condition": "取得中",
         "temperature": "--",
@@ -41,7 +41,6 @@ async def get_weather():
             response.raise_for_status()
             weather_data = response.json()
             
-            # Map OpenWeatherMap API response to our app format
             icon_id = weather_data["weather"][0]["icon"]
             weather = {
                 "condition": weather_data["weather"][0]["description"],
@@ -53,7 +52,7 @@ async def get_weather():
         except Exception as e:
             print(f"Error fetching weather data: {repr(e)}")
     
-    # 現在の時刻などの付加情報も入れるとフロントで表示しやすい
+    # 画面側に返却
     return {
         "status": "success",
         "data": {
@@ -69,6 +68,7 @@ async def get_forecast():
     url = FORECAST_URL + "?lat="+LAT+"&lon="+LON+"&appid="+API_KEY+"&units=metric&lang=ja"
     print("APIリクエスト開始: URL = "+url)
     
+    # リストの初期化
     forecast_list = []
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=30.0)) as client:
@@ -107,6 +107,7 @@ async def get_forecast():
 
         except Exception as e:
             print(f"Error fetching weather data: {e}")
+        # 画面側に返却
         return {
             "status": "success",
             "data": forecast_list,
