@@ -1,0 +1,350 @@
+/* Reset & Base settings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: #1f2937;
+    /* 16:9 Display Base - typically full screen with no scroll */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    /* Simple clean white background */
+    background: #f8fafc;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Background dynamic orb effects (removed for a simple cleaner white look) */
+body::before,
+body::after {
+    display: none;
+}
+
+/* Container */
+.dashboard-container {
+    position: relative;
+    z-index: 1;
+    width: 1024px;
+    /* Fixed width for 7-inch display */
+    height: 600px;
+    /* Fixed height for 7-inch display */
+    display: grid;
+    grid-template-columns: 580px 1fr;
+    /* approx 60:40 ratio with gap */
+    gap: 24px;
+    padding: 24px;
+}
+
+/* Panels */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+/* Settings for Widgets */
+.widget {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 15px;
+    padding: 24px 30px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.widget-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #9ca3af;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   Left Panel Widgets 
+   ========================================= */
+
+/* Time Widget */
+.time-widget {
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.date {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: #6b7280;
+    margin-bottom: 12px;
+}
+
+.time {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    color: #111827;
+}
+
+.time-part {
+    font-size: 80px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    min-width: 90px;
+    text-align: center;
+}
+
+.time-colon {
+    font-size: 70px;
+    font-weight: 700;
+    line-height: 1;
+    padding-bottom: 8px;
+    margin: 0 4px;
+}
+
+.second-part {
+    font-size: 40px;
+    font-weight: 600;
+    color: #9ca3af;
+    min-width: 50px;
+    margin-left: 10px;
+    text-align: left;
+}
+
+/* Calendar Widget */
+.calendar-widget {
+    flex: 1;
+    align-items: stretch;
+}
+
+.calendar-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.calendar-container {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.calendar-table th {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9ca3af;
+    padding-bottom: 10px;
+}
+
+.calendar-table td {
+    text-align: center;
+    vertical-align: middle;
+    height: 40px;
+    font-size: 24px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.calendar-table th.sun,
+.calendar-table td.sun {
+    color: #ef4444;
+}
+
+.calendar-table th.sat,
+.calendar-table td.sat {
+    color: #3b82f6;
+}
+
+.calendar-table td span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.calendar-table td.today span {
+    background-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   Right Panel Widgets 
+   ========================================= */
+
+/* Weather Widget */
+.weather-widget {
+    flex: 8;
+    /* 天気パネルの比率 70% */
+    justify-content: space-between;
+}
+
+.weather-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.icon-large {
+    width: 100px;
+    height: 100px;
+    color: #4b5563;
+}
+
+.weather-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.temperature {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #111827;
+}
+
+.weather-sub {
+    font-size: 25px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.humidity-wrap {
+    color: #6b7280;
+}
+
+/* Forecast Container */
+.forecast-container {
+    display: flex;
+    justify-content: space-between;
+    /* margin-top: auto; */
+    border-top: 1px solid #f3f4f6;
+    padding-top: 16px;
+    width: 100%;
+}
+
+.forecast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.forecast-time {
+    font-size: 20px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.forecast-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.forecast-temp {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.forecast-humidity {
+    font-size: 20px;
+    font-weight: 700;
+    color: #6b7280;
+}
+
+.forecast-pop {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.pop-icon {
+    width: 15px;
+    height: 15px;
+}
+
+/* Currency Widget */
+.currency-widget {
+    flex: 2;
+    /* 為替パネルの比率 30% */
+    justify-content: center;
+}
+
+.currency-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* 縦の中央に揃える */
+}
+
+.currency-pair {
+    font-size: 24px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.currency-values {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.currency-rate {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+    color: #111827;
+    font-variant-numeric: tabular-nums;
+}
+
+.currency-unit {
+    font-size: 18px;
+    font-weight: 500;
+    color: #9ca3af;
+    margin-left: 6px;
+}
+
+.currency-change {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+.currency-change.positive {
+    color: #10b981;
+    /* green */
+}
+
+.currency-change.negative {
+    color: #ef4444;
+    /* red */
+}

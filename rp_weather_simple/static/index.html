@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Feather Icons for dummy weather icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Date & Time Widget -->
+        <div class="widget time-widget">
+            <div class="date" id="date-display">--月--日(--)</div>
+            <div class="time" id="time-container">
+                <div class="time-part" id="hour-display">--</div>
+                <div class="time-colon">:</div>
+                <div class="time-part" id="minute-display">--</div>
+                <div class="time-part second-part" id="second-display">--</div>
+            </div>
+        </div>
+
+        <!-- Weather Widget -->
+        <div class="widget weather-widget">
+            <!-- <div class="weather-title">現在の天気</div> -->
+            <div class="weather-content">
+                <i id="weather-icon" data-feather="cloud" class="icon-large"></i>
+                <div class="weather-details">
+                    <div class="temperature"><span id="temperature-display">--</span>°C</div>
+                    <div class="condition" id="condition-display">取得中...</div>
+                </div>
+            </div>
+
+            <!-- 3時間ごとの予報（ダミー） -->
+            <div class="forecast-container" id="forecast-container">
+                <!-- JSで動的に追加されます -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>

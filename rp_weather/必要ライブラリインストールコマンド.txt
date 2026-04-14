@@ -1,0 +1,4 @@
+・為替情報の取得ライブラリ
+pip install yfinance
+・.envファイルからのよみこみ
+pip install python-dotenv
