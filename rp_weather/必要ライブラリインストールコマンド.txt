@@ -2,3 +2,10 @@
 pip install yfinance
 ・.envファイルからのよみこみ
 pip install python-dotenv
+
+・Discodeのライブラリインストールコマンド
+pip install discord.py
+※見つからない場合、pip3 install discord.py
+
+・ログ表示ライブラリ
+pip install loguru
