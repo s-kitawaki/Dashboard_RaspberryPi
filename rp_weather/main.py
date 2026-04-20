@@ -250,7 +250,7 @@ async def get_rate():
             "status": "success",
             "data": {
                 "exchange_rate": current_ask,
-                "exchange_diff": diff_text
+                "exchange_diff": diff
             },
             "timestamp": datetime.now().isoformat()
         }

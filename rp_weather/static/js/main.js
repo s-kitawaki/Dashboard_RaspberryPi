@@ -125,8 +125,8 @@ async function updateRate() {
 
             // 値動きの表示
             const changeDisplay = document.getElementById('exchange-change-display');
-            if (changeDisplay && data.exchange_change !== undefined) {
-                const changeVal = data.exchange_change;
+            if (changeDisplay && data.exchange_diff !== undefined) {
+                const changeVal = data.exchange_diff;
                 const sign = changeVal > 0 ? '+' : '';
                 changeDisplay.textContent = `${sign}${changeVal.toFixed(2)}`;
 
