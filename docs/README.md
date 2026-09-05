@@ -5,5 +5,6 @@
 | ファイル | 内容 |
 | --- | --- |
 | [deploy.md](deploy.md) | 画面・Worker・インフラを更新したときの Cloudflare へのデプロイ手順、動作確認、トラブルシューティング |
+| [cloudflare-free-tier.md](cloudflare-free-tier.md) | 使用中の Cloudflare 機能の無料枠、このダッシュボードの利用量の目安、上限超過時の挙動 |
 
 新しいドキュメントを追加したら、この表に1行追加してください。
