@@ -48,9 +48,10 @@ button:focus-visible { outline: 2px solid #d7edbb !important; outline-offset: 4p
 .calendar-table th:last-child, .calendar-table td:last-child { color: #a7c5dd; }
 .calendar-table .today { background: #c9dfb5; color: #213223; font-weight: 700; box-shadow: 0 0 18px #c9dfb515; }
 .right-stack { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-.forecast-panel { flex: 1; }
-.forecast-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 18px -10px 0; }
-.forecast-slot { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; border-right: 1px solid #ffffff0e; }
+/* Both lower-right panels grow from their content size so leftover height is split, not stacked in one panel. */
+.forecast-panel, .rate-panel { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.forecast-grid { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 18px -10px 0; }
+.forecast-slot { display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 5px; min-width: 0; border-right: 1px solid #ffffff0e; }
 .forecast-slot:last-child { border-right: 0; }
 .forecast-slot time { color: #bac6c0; font-size: 12px; font-variant-numeric: tabular-nums; }
 .forecast-slot strong { font-weight: 500; font-size: 22px; }
@@ -58,8 +59,7 @@ button:focus-visible { outline: 2px solid #d7edbb !important; outline-offset: 4p
 .forecast-humidity, .forecast-pop { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #acb9b5; }
 .forecast-pop { color: #b5cfe4; }
 .slot-missing { color: #abb8b0; font-size: 11px; margin: auto; }
-.rate-panel { flex-shrink: 0; }
-.rate-main { gap: 12px; margin: 20px 0 0; }
+.rate-main { flex: 1; gap: 12px; margin: 20px 0 0; }
 .currency-pair { gap: 12px; }
 .currency-symbols { display: flex; padding-right: 5px; }
 .currency-symbols > span { width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid #1a2326; border-radius: 50%; background: #c5d4c1; color: #273c2a; font-weight: 600; font-size: 14px; }
