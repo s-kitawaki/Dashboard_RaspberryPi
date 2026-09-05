@@ -21,17 +21,26 @@ export async function verify(request: Request, body: string, publicKey: string):
 }
 const reply = (content: string) => Response.json({ type: 4, data: { content, flags: 64, allowed_mentions: { parse: [] } } });
 
+export const ENTRY_USAGE = '「価格 売買方向」の形式で入力してください。例: 156.2111 long（売りは short、省略時は買い）。価格は 0 より大きく 1,000,000 以下の数です。';
+const SIDES: Record<string, Position['side']> = { long: 'long', short: 'short', l: 'long', s: 'short', '買い': 'long', '売り': 'short', '買': 'long', '売': 'short' };
+/** Parses the free-text order "156.2111 long" typed into the single /entry field. */
+export function parseOrder(value: unknown): Pick<Position, 'price' | 'side'> | null {
+  if (typeof value !== 'string') return null;
+  const match = /^(\d+(?:\.\d+)?)(?:\s+(\S+))?$/.exec(value.trim());
+  if (!match) return null;
+  const price = Number(match[1]);
+  const side = match[2] === undefined ? 'long' : SIDES[match[2].toLowerCase()];
+  if (!Number.isFinite(price) || price <= 0 || price > 1_000_000 || side === undefined) return null;
+  return { price, side };
+}
+
 export async function command(interaction: Interaction, env: Env): Promise<string> {
   const name = interaction.data?.name;
   if (name === 'entry') {
-    const options = Object.fromEntries((interaction.data?.options ?? []).map(x => [x.name, x.value]));
-    const price = options.price;
-    const quantity = options.quantity ?? null;
-    const side = options.side ?? 'long';
-    if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0 || price > 1_000_000 ||
-      (quantity !== null && (typeof quantity !== 'number' || !Number.isFinite(quantity) || quantity <= 0 || quantity > 1_000_000_000)) ||
-      (side !== 'long' && side !== 'short')) return '価格・数量は正の数、売買方向は long / short を指定してください。';
-    const position: Position = { price, quantity, side, updatedAt: new Date().toISOString(), updatedBy: interaction.member!.user!.id };
+    const parsed = parseOrder(interaction.data?.options?.find(x => x.name === 'order')?.value);
+    if (!parsed) return ENTRY_USAGE;
+    // Quantity is intentionally not collected; notifications report per-USD profit.
+    const position: Position = { ...parsed, quantity: null, updatedAt: new Date().toISOString(), updatedBy: interaction.member!.user!.id };
     await env.DASHBOARD_KV.put(POSITION_KEY, JSON.stringify(position));
     return `登録しました。既存ポジションは置き換わります。\n${positionText(position)}\n通知への反映に60秒以上かかる場合があります。`;
   }

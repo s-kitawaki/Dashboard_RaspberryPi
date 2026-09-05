@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { command, interactions, verify } from '../src/discord';
+import { command, ENTRY_USAGE, interactions, parseOrder, verify } from '../src/discord';
 import { POSITION_KEY } from '../src/types';
 import { NOW, position, rate, setup } from './helpers';
 
@@ -19,7 +19,7 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 function interaction(overrides: Record<string, unknown> = {}) {
   return { id: String(nextId++), application_id: '123', token: 'signed-token', type: 2,
     guild_id: 'guild-1', channel_id: 'channel-1', member: { user: { id: 'user-1' } },
-    data: { name: 'entry', options: [{ name: 'price', value: 150 }] }, ...overrides };
+    data: { name: 'entry', options: [{ name: 'order', value: '150' }] }, ...overrides };
 }
 async function signedRequest(value: unknown, timestamp = String(NOW / 1000), sentBody?: string) {
   const body = typeof value === 'string' ? value : JSON.stringify(value);
@@ -140,13 +140,30 @@ describe('deferred position commands', () => {
     expect(body.content).toContain('登録しました');
     expect(body.allowed_mentions).toEqual({ parse: [] });
   });
-  it('accepts a trimmed allowlist user and explicit short quantity', async () => {
+  it('accepts a trimmed allowlist user and an explicit short order without quantity', async () => {
     const fixture = setup();
-    await dispatch(interaction({ member: { user: { id: 'user-2' } }, data: { name: 'entry', options: [
-      { name: 'price', value: 149.5 }, { name: 'quantity', value: 2.5 }, { name: 'side', value: 'short' },
-    ] } }), fixture);
+    await dispatch(interaction({ member: { user: { id: 'user-2' } }, data: { name: 'entry', options: [{ name: 'order', value: '149.5 short' }] } }), fixture);
     await fixture.drain();
-    expect(JSON.parse(fixture.values.get(POSITION_KEY)!)).toMatchObject({ price: 149.5, quantity: 2.5, side: 'short', updatedBy: 'user-2' });
+    expect(JSON.parse(fixture.values.get(POSITION_KEY)!)).toEqual({ price: 149.5, quantity: null, side: 'short', updatedBy: 'user-2', updatedAt: expect.any(String) });
+    const content = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string).content;
+    expect(content).toContain('149.500 円 / 売り');
+    expect(content).toContain('1 USDあたり');
+  });
+  it.each([
+    ['156.2111 long', 156.2111, 'long'], ['156.2111 short', 156.2111, 'short'], ['156.2111', 156.2111, 'long'],
+    ['  150  SHORT  ', 150, 'short'], ['150 l', 150, 'long'], ['150 s', 150, 'short'],
+    ['150 買い', 150, 'long'], ['150 売り', 150, 'short'], ['0.5 long', 0.5, 'long'], ['1000000', 1_000_000, 'long'],
+  ])('parses the free-text order %j', (input, price, side) => {
+    expect(parseOrder(input)).toEqual({ price, side });
+  });
+  it.each([
+    '', '   ', 'abc', '150 buy', '150 long extra', '-1', '0', '1000000.01', '150,5', '150.', '.5', '1e3', 'Infinity', 'NaN long',
+    '150long', 'long 150',
+  ])('rejects the malformed order %j', input => {
+    expect(parseOrder(input)).toBeNull();
+  });
+  it.each([150, null, undefined, { price: 150 }])('rejects a non-string order value %j', value => {
+    expect(parseOrder(value)).toBeNull();
   });
   it('deletes an entry and reports absence on a subsequent status command', async () => {
     const fixture = setup(); fixture.seed(POSITION_KEY, position());
@@ -167,21 +184,22 @@ describe('deferred position commands', () => {
     expect(fixture.kv.put.mock.calls.filter(([key]) => key === POSITION_KEY)).toHaveLength(0);
   });
   it.each([
-    ['price', 0], ['price', -1], ['price', 1_000_001], ['price', '150'], ['price', null],
-    ['quantity', 0], ['quantity', -1], ['quantity', 1_000_000_001], ['quantity', '10'], ['side', 'buy'],
-  ])('defers validation failure for %s=%s without overwriting the position', async (name, value) => {
+    [{ name: 'order', value: '0' }], [{ name: 'order', value: '-1' }], [{ name: 'order', value: '1000001' }],
+    [{ name: 'order', value: '150 buy' }], [{ name: 'order', value: 150 }], [{ name: 'order', value: null }],
+    [{ name: 'price', value: 150 }], undefined,
+  ])('defers validation failure for option %j without overwriting the position', async option => {
     const fixture = setup(); fixture.seed(POSITION_KEY, position());
     const before = fixture.values.get(POSITION_KEY);
-    const options = Object.entries({ price: 150, [name]: value }).map(([name, value]) => ({ name, value }));
+    const options = option === undefined ? undefined : [option];
     expect((await dispatch(interaction({ data: { name: 'entry', options } }), fixture)).body.type).toBe(5);
     await fixture.drain();
     expect(fixture.values.get(POSITION_KEY)).toBe(before);
     expect(fixture.kv.put.mock.calls.filter(([key]) => key === POSITION_KEY)).toHaveLength(0);
-    expect(JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string).content).toContain('正の数');
+    expect(JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string).content).toBe(ENTRY_USAGE);
   });
-  it.each([NaN, Infinity, -Infinity])('rejects nonfinite command input %s before persistence', async value => {
+  it('rejects a nonfinite-looking order before persistence', async () => {
     const fixture = setup();
-    expect(await command(interaction({ data: { name: 'entry', options: [{ name: 'price', value }] } }), fixture.env)).toContain('正の数');
+    expect(await command(interaction({ data: { name: 'entry', options: [{ name: 'order', value: 'Infinity long' }] } }), fixture.env)).toBe(ENTRY_USAGE);
     expect(fixture.kv.put).not.toHaveBeenCalled();
   });
   it('reports storage failures privately and does not expose exception details', async () => {

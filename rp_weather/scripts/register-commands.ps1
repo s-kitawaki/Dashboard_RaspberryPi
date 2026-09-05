@@ -14,12 +14,8 @@ $commands = @(
         type = 1
         description = '共有のUSD/JPYポジションを登録・上書きします'
         options = @(
-            @{ name = 'price'; description = 'エントリー価格（1 USDあたりの円、0より大きい数）'; type = 10; required = $true; min_value = 0; max_value = 1000000 },
-            @{ name = 'quantity'; description = '保有数量（USD単位）。省略すると1 USDあたりの損益幅を表示'; type = 10; required = $false; min_value = 0; max_value = 1000000000 },
-            @{
-                name = 'side'; description = '売買方向。省略時は買い（long）'; type = 3; required = $false
-                choices = @(@{ name = '買い（long）'; value = 'long' }, @{ name = '売り（short）'; value = 'short' })
-            }
+            # One free-text field so the user types "156.2111 long" in a single step; the Worker parses and validates it.
+            @{ name = 'order'; description = '価格と売買方向。例: 156.2111 long（売りは short、省略時は買い）'; type = 3; required = $true; min_length = 1; max_length = 40 }
         )
     },
     @{ name = 'exit'; type = 1; description = '共有のUSD/JPYポジション登録を削除します' },

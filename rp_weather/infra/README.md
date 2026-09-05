@@ -176,12 +176,13 @@ Remove-Item Env:DISCORD_BOT_TOKEN
 The bot token is used only by this local registration script; it is never a
 Terraform variable, Worker binding, Pages variable or committed file. The script
 upserts three guild commands individually, preserving unrelated commands:
-`/entry price:<required number> quantity:<optional number in USD> side:<optional long|short>`,
-`/exit`, and `/position`. Re-running updates the same names.
-Registration uses numeric options capped at 1,000,000 for price
-and 1,000,000,000 for quantity. Discord permits a lower bound of zero in this
-schema; the backend additionally requires strictly positive values. Omitted
-`side` defaults to `long` in the backend (Discord has no option default field).
+`/entry order:<required string, "price [long|short]">`, `/exit`, and `/position`.
+Re-running updates the same names. `/entry` deliberately uses one free-text
+option (1-40 characters) so the user types `156.2111 long` in a single step;
+Discord slash commands cannot take positional arguments. The backend parses it
+and requires a price strictly above zero and at most 1,000,000; the side accepts
+`long`/`short`, `l`/`s` or `買い`/`売り` and defaults to `long` when omitted.
+Quantity is no longer collected, so notifications report per-USD profit only.
 The commands operate on one shared USDJPY position, with the configured guild/channel/user allowlist enforced
 by the backend. Guild command visibility itself does not enforce the allowlist.
 See [Discord's official command API](https://docs.discord.com/developers/interactions/application-commands#create-guild-application-command).
