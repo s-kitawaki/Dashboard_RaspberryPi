@@ -34,12 +34,15 @@ foreach ($id in @($ApplicationId, $GuildId)) {
 }
 if ([string]::IsNullOrWhiteSpace($env:DISCORD_BOT_TOKEN)) { throw 'Set DISCORD_BOT_TOKEN in the local process environment.' }
 $endpoint = "https://discord.com/api/v10/applications/$ApplicationId/guilds/$GuildId/commands"
+# Discord rejects bot API calls without a "DiscordBot (url, version)" User-Agent (HTTP 403, code 40333).
+$headers = @{
+    Authorization = "Bot $env:DISCORD_BOT_TOKEN"
+    'User-Agent'  = 'DiscordBot (https://github.com/s-kitawaki/Dashboard_RaspberryPi, 1.0)'
+}
 foreach ($command in $commands) {
     # POST is an upsert by name/type/scope; unrelated commands are preserved.
     try {
-        $result = Invoke-RestMethod -Method Post -Uri $endpoint -Headers @{
-            Authorization = "Bot $env:DISCORD_BOT_TOKEN"
-        } -ContentType 'application/json' -Body ($command | ConvertTo-Json -Depth 10 -Compress)
+        $result = Invoke-RestMethod -Method Post -Uri $endpoint -Headers $headers -ContentType 'application/json' -Body ($command | ConvertTo-Json -Depth 10 -Compress)
         if ($result.name -ne $command.name) { throw 'Unexpected Discord response.' }
     } catch {
         throw "Registration failed for /$($command.name). Check application/guild IDs, bot token and applications.commands authorization. If rate-limited, wait and rerun."
