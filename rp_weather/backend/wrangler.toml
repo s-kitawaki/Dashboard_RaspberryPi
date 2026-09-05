@@ -1,0 +1,19 @@
+name = "rp-weather-api"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Local development only. Production resources and code are managed by Terraform.
+[[kv_namespaces]]
+binding = "DASHBOARD_KV"
+id = "00000000000000000000000000000000"
+
+[triggers]
+crons = ["0 * * * *"]
+
+[vars]
+LATITUDE = "34.512976"
+LONGITUDE = "135.792097"
+DISCORD_PUBLIC_KEY = ""
+DISCORD_GUILD_ID = ""
+DISCORD_CHANNEL_ID = ""
+DISCORD_ALLOWED_USER_IDS = ""

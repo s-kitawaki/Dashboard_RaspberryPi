@@ -1,0 +1,8 @@
+OPENWEATHER_API_KEY=""
+TWELVE_DATA_API_KEY=""
+DISCORD_WEBHOOK_URL=""
+# Override wrangler.toml values here when testing signed Discord interactions.
+DISCORD_PUBLIC_KEY=""
+DISCORD_GUILD_ID=""
+DISCORD_CHANNEL_ID=""
+DISCORD_ALLOWED_USER_IDS=""

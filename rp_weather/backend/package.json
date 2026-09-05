@@ -1,0 +1,26 @@
+{
+  "name": "rp-weather-worker",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "^22.13.0 || >=24.0.0" },
+  "scripts": {
+    "dev": "wrangler dev --test-scheduled",
+    "build": "esbuild src/index.ts --bundle --format=esm --target=es2022 --outfile=dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix --max-warnings=0",
+    "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260904.1",
+    "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.10.0",
+    "globals": "^16.5.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^5.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and replace example public identifiers.
+account_id               = "00000000000000000000000000000000"
+workers_subdomain        = "your-account"
+worker_name              = "rp-weather-api"
+pages_project_name       = "rp-weather-dashboard"
+production_branch        = "main"
+discord_public_key       = "0000000000000000000000000000000000000000000000000000000000000000"
+discord_guild_id          = "123456789012345678"
+discord_channel_id        = "123456789012345678"
+discord_allowed_user_ids = "123456789012345678,234567890123456789"
+latitude                 = 35.6812
+longitude                = 139.7671
+# Never put API keys or webhook URLs in Terraform variables.
