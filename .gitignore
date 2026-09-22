@@ -20,3 +20,6 @@ crash.log
 logs/
 playwright-report/
 test-results/
+
+# Local credential notes; never commit
+docs/credentials.md
