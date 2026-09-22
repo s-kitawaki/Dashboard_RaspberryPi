@@ -64,6 +64,21 @@ npm run storybook -- --host 127.0.0.1
 
 実際の現在時刻とローカルWorkerのデータで確認する場合は、前述の開発手順でWorkerを起動したうえで、frontendで `npm run dev` を実行し `http://localhost:5173` を開きます。Worker未起動でも時計とくちぱっちは動きますが、天気・予報・為替は取得エラー表示になります。
 
+## くちぱっちなしの画面
+
+くちぱっちを追加する前の素の画面は、ブランチ `chore/plain-dashboard` に残しています。文字サイズの拡大は反映済みで、時計の横にキャラクターが出ない点だけが `main` と異なります。
+
+![くちぱっちなしのダッシュボード（1024×600、サンプルデータ）](docs/images/dashboard-plain.png)
+
+画像は画面テストが生成した 1024×600 のスクリーンショットで、日時・天気・為替は固定のサンプル値です。
+
+```powershell
+git switch chore/plain-dashboard   # なし版に切り替え
+git switch main                    # 本番版に戻す
+```
+
+`main` に入れた変更をなし版にも反映したいときは、なし版に切り替えてから `git cherry-pick <コミットID>` で1件ずつ取り込みます。なし版を Cloudflare に別 URL で公開する場合は `deploy-pages.ps1` にブランチ指定を追加する必要があります。
+
 ## Discordの使い方
 
 Discord Developer Portalでアプリを作成し、Public KeyをTerraformの設定へ、Bot Tokenをコマンド登録時だけの環境変数へ設定します。公開したWorkerの `/discord/interactions` を **Interactions Endpoint URL** に登録します。Webhook URLは送信専用です。受信にはSlash Commandを使い、常時接続Botは不要です。
