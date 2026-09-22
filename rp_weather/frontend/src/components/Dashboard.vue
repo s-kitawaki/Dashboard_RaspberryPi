@@ -4,11 +4,12 @@ import { mdiWaterOutline, mdiUmbrellaOutline, mdiWeatherPartlyCloudy, mdiArrowRi
 import type { Weather, Forecast, Rate, ResourceState } from '../lib/api'
 import { japanDate, weekdays } from '../lib/time'
 import CalendarPanel from './CalendarPanel.vue'
+import Kuchipatchi from './Kuchipatchi.vue'
 import DataStatus from './DataStatus.vue'
 import WeatherIcon from './WeatherIcon.vue'
 
 defineOptions({ name: 'DailyDashboard' })
-const props = defineProps<{ now: Date; weather: ResourceState<Weather>; forecast: ResourceState<Forecast[]>; rate: ResourceState<Rate> }>()
+const props = withDefaults(defineProps<{ now: Date; petWalking?: boolean; petFacing?: 'front' | 'left' | 'right'; weather: ResourceState<Weather>; forecast: ResourceState<Forecast[]>; rate: ResourceState<Rate> }>(), { petWalking: true })
 defineEmits<{ retryWeather: []; retryForecast: []; retryRate: [] }>()
 const japan = computed(() => japanDate(props.now))
 const slots = computed(() => Array.from({ length: 4 }, (_, i) => props.forecast.data?.[i] ?? null))
@@ -20,7 +21,10 @@ const slots = computed(() => Array.from({ length: 4 }, (_, i) => props.forecast.
       <v-card tag="section" class="panel clock-panel" aria-label="現在の日本時間">
         <div class="clock-center">
           <p class="clock-date">{{ japan.year }}年 {{ japan.month }}月{{ japan.day }}日 <span>{{ weekdays[japan.weekday] }}曜日</span></p>
+          <div class="clock-face">
           <time class="clock" :datetime="now.toISOString()" :aria-label="`日本時間 ${japan.hour}時${japan.minute}分${japan.second}秒`"><span>{{ japan.hour }}</span><span class="clock-colon">:</span><span>{{ japan.minute }}</span><span class="clock-seconds">{{ japan.second }}</span></time>
+          <Kuchipatchi :now="now" :facing="petFacing" :walking="petWalking !== false" />
+          </div>
         </div>
       </v-card>
 

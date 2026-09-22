@@ -111,3 +111,69 @@ test('displays skeletons while requests are pending', async ({ page }, testInfo)
   await expect(page.getByRole('button', { name: 'すべてのデータを更新' })).toHaveCount(0)
   await page.screenshot({ path: testInfo.outputPath('loading.png'), fullPage: true })
 })
+
+test('keeps the pet inside the clock panel and switches sleep at JST boundaries', async ({ page }, testInfo) => {
+  await mockApis(page)
+  await page.goto('/')
+  const pet = page.getByRole('img', { name: 'くちぱっち：お散歩中' })
+  await expect(pet).toBeVisible()
+  const petBox = await pet.boundingBox()
+  const panelBox = await page.locator('.clock-panel').boundingBox()
+  const clockBox = await page.locator('.clock').boundingBox()
+  expect(petBox && panelBox && clockBox).toBeTruthy()
+  if (!petBox || !panelBox || !clockBox) throw new Error('Missing clock layout')
+  expect(petBox.x).toBeGreaterThanOrEqual(panelBox.x)
+  expect(petBox.x + petBox.width).toBeLessThanOrEqual(panelBox.x + panelBox.width)
+  expect(petBox.y + petBox.height).toBeLessThanOrEqual(panelBox.y + panelBox.height)
+  expect(petBox.x >= clockBox.x + clockBox.width || petBox.y >= clockBox.y + clockBox.height).toBe(true)
+  await page.clock.setSystemTime(new Date('2026-09-05T12:59:58Z'))
+  await page.clock.runFor(1000)
+  await expect(pet).toBeVisible()
+  await page.clock.runFor(1000)
+  await expect(page.getByRole('img', { name: 'くちぱっち：おやすみ中' })).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath('sleeping.png'), fullPage: true })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(page.locator('.pet-body')).toHaveCSS('animation-name', 'none')
+  await expect(page.locator('.pet-eyes-closed')).toHaveCSS('opacity', '1')
+  await page.clock.setSystemTime(new Date('2026-09-05T21:59:58Z'))
+  await page.clock.runFor(1000)
+  await expect(page.getByRole('img', { name: 'くちぱっち：おやすみ中' })).toBeVisible()
+  await page.clock.runFor(1000)
+  await expect(pet).toBeVisible()
+  await expect(page.locator('.pet-eyes-open')).toHaveCSS('opacity', '1')
+  await expect(page.locator('.pet-eyes-closed')).toHaveCSS('opacity', '0')
+})
+
+test('walks back and forth within the space after the clock and pauses at night', async ({ page }) => {
+  await mockApis(page)
+  await page.goto('/')
+  const pet = page.locator('.kuchipatchi')
+  await expect(pet).toBeVisible()
+  const samples = await pet.evaluate(el => {
+    const svg = el.querySelector('svg')!
+    const direction = el.querySelector('.pet-direction')!
+    const walk = svg.getAnimations()[0]!
+    const turn = direction.getAnimations()[0]!
+    walk.pause(); turn.pause()
+    return [0, 4000, 8000, 12000].map(time => {
+      walk.currentTime = time; turn.currentTime = time
+      return { x: svg.getBoundingClientRect().x, right: svg.getBoundingClientRect().right, turn: getComputedStyle(direction).transform }
+    })
+  })
+  expect(samples[0]!.x).toBeGreaterThan(samples[1]!.x)
+  expect(samples[1]!.x).toBeGreaterThan(samples[2]!.x)
+  expect(samples[3]!.x).toBeGreaterThan(samples[2]!.x)
+  expect(samples[0]!.turn).toBe('matrix(-1, 0, 0, 1, 0, 0)')
+  expect(samples[2]!.turn).toBe('matrix(1, 0, 0, 1, 0, 0)')
+  const lane = (await pet.boundingBox())!
+  for (const sample of samples) {
+    expect(sample.x).toBeGreaterThanOrEqual(lane.x - .1)
+    expect(sample.right).toBeLessThanOrEqual(lane.x + lane.width + .1)
+  }
+  await page.clock.setSystemTime(new Date('2026-09-05T13:00:00Z'))
+  await page.clock.runFor(1000)
+  await expect(pet.locator('svg')).toHaveCSS('animation-play-state', 'paused')
+  await expect(pet.locator('.pet-direction')).toHaveCSS('animation-play-state', 'paused')
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(pet.locator('svg')).toHaveCSS('animation-name', 'none')
+})

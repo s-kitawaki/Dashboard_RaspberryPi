@@ -48,6 +48,22 @@ npm run dev
 
 Viteの開発用プロキシで `/api` をローカルWorkerへ転送します。StorybookのサンプルはAPIキー不要です。
 
+## くちぱっちのローカル画面確認
+
+時計の横にSVGのドット絵を表示します。日本時間の7:00〜21:59は時計の右の空き領域を約16秒で一往復し、端で向きを変えます。足踏み・まばたきも行い、22:00〜翌6:59はその場で停止して睡眠になります。狭い画面では時計の下に移動領域を折り返します。OSの「視差効果を減らす」設定ではアニメーションを停止します。外部画像や追加APIは使用しません。
+
+APIキー不要で全体画面を確認するには、Macのターミナルで次を実行します。
+
+```sh
+cd "/Users/kitawakishinichi/Library/CloudStorage/GoogleDrive-b1a2b1o4@gmail.com/マイドライブ/Work _src/Dashboard_RaspberryPi/rp_weather/frontend"
+npm ci
+npm run storybook -- --host 127.0.0.1
+```
+
+`http://localhost:6006` を開き、サイドバーの **Dashboard → 日々 → Default** を選びます。**Sleeping Kuchipatchi** で夜の表示、**くちぱっち → Awake / Sleeping** でキャラクター単体も確認できます。Storybookの日時・天気・為替は固定サンプルですが、キャラクターのアニメーションは動きます。表示領域を1024×600にするとRaspberry Pi向けの配置を確認できます。終了は `Ctrl+C` です。
+
+実際の現在時刻とローカルWorkerのデータで確認する場合は、前述の開発手順でWorkerを起動したうえで、frontendで `npm run dev` を実行し `http://localhost:5173` を開きます。Worker未起動でも時計とくちぱっちは動きますが、天気・予報・為替は取得エラー表示になります。
+
 ## Discordの使い方
 
 Discord Developer Portalでアプリを作成し、Public KeyをTerraformの設定へ、Bot Tokenをコマンド登録時だけの環境変数へ設定します。公開したWorkerの `/discord/interactions` を **Interactions Endpoint URL** に登録します。Webhook URLは送信専用です。受信にはSlash Commandを使い、常時接続Botは不要です。

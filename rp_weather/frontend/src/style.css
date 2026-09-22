@@ -14,6 +14,7 @@ button:focus-visible { outline: 2px solid #d7edbb !important; outline-offset: 4p
 .subtle { color: #a4b2ac; font-size: 10px; }
 .clock-panel.v-card { background: radial-gradient(ellipse at 95% 15%, #a4c3a516, transparent 60%), #202c29; display: flex; flex-direction: column; }
 .clock-center { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.clock-face { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0 12px; }
 .clock-date { color: #d3dccf; font-size: 15px; letter-spacing: 1px; }
 .clock-date span { color: #a5b6a8; font-size: 12px; margin-left: 12px; }
 .clock { display: flex; align-items: baseline; font-size: clamp(64px, 8.8vw, 126px); letter-spacing: -6px; line-height: 1.2; font-weight: 300; font-variant-numeric: tabular-nums; color: #e4ecd8; white-space: nowrap; }

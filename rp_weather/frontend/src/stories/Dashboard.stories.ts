@@ -22,3 +22,10 @@ export const UnknownProviderTime: Story = { args: { rate: stale({ ...sampleRate,
 export const SixWeekCalendar: Story = { args: { now: new Date('2026-08-31T14:59:59Z') } }
 export const JapanNewYear: Story = { args: { now: new Date('2026-12-31T15:00:00Z') } }
 export const BrokenIcons: Story = { args: { weather: ready({ ...sampleWeather, icon: '' }), forecast: ready(sampleForecast.map(f => ({ ...f, icon: '' }))) } }
+
+export const SleepingKuchipatchi: Story = { args: { now: new Date('2026-09-05T13:00:00Z') } }
+
+export const LeftKuchipatchi: Story = { args: { petFacing: 'left' } }
+export const RightKuchipatchi: Story = { args: { petFacing: 'right' } }
+
+export const FrontKuchipatchi: Story = { args: { petWalking: false, petFacing: 'front' } }
