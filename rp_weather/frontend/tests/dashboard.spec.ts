@@ -115,42 +115,54 @@ test('displays skeletons while requests are pending', async ({ page }, testInfo)
   await page.screenshot({ path: testInfo.outputPath('loading.png'), fullPage: true })
 })
 
-test('keeps the pet inside the clock panel and switches sleep at JST boundaries', async ({ page }, testInfo) => {
+test('keeps the pet on its lane and switches sleep at JST boundaries', async ({ page }, testInfo) => {
   await mockApis(page)
   await page.goto('/')
-  const pet = page.getByRole('img', { name: 'くちぱっち：お散歩中' })
+  const mobile = testInfo.project.name === 'mobile'
+  // Stacked layout: beside the clock. Two columns: on the seam between the rows.
+  const pet = page.locator(mobile ? '.clock-face .kuchipatchi' : '.pet-rail .kuchipatchi')
+  const other = page.locator(mobile ? '.pet-rail .kuchipatchi' : '.clock-face .kuchipatchi')
   await expect(pet).toBeVisible()
-  const petBox = await pet.boundingBox()
-  const panelBox = await page.locator('.clock-panel').boundingBox()
-  const clockBox = await page.locator('.clock').boundingBox()
-  expect(petBox && panelBox && clockBox).toBeTruthy()
-  if (!petBox || !panelBox || !clockBox) throw new Error('Missing clock layout')
-  expect(petBox.x).toBeGreaterThanOrEqual(panelBox.x)
-  expect(petBox.x + petBox.width).toBeLessThanOrEqual(panelBox.x + panelBox.width)
-  expect(petBox.y + petBox.height).toBeLessThanOrEqual(panelBox.y + panelBox.height)
-  expect(petBox.x >= clockBox.x + clockBox.width || petBox.y >= clockBox.y + clockBox.height).toBe(true)
+  await expect(other).toBeHidden()
+  await expect(pet).toHaveAttribute('aria-label', mobile ? 'くちぱっち：お散歩中' : 'くちぱっち：足踏み中')
+  const petBox = (await pet.boundingBox())!
+  if (mobile) {
+    const panelBox = (await page.locator('.clock-panel').boundingBox())!
+    const clockBox = (await page.locator('.clock').boundingBox())!
+    expect(petBox.x).toBeGreaterThanOrEqual(panelBox.x)
+    expect(petBox.x + petBox.width).toBeLessThanOrEqual(panelBox.x + panelBox.width)
+    expect(petBox.y + petBox.height).toBeLessThanOrEqual(panelBox.y + panelBox.height)
+    expect(petBox.x >= clockBox.x + clockBox.width || petBox.y >= clockBox.y + clockBox.height).toBe(true)
+  } else {
+    const gridBox = (await page.locator('.dashboard-grid').boundingBox())!
+    const calendarBox = (await page.locator('.calendar-panel').boundingBox())!
+    // Feet (6px above the sprite box bottom) stand on the top edge of the lower row.
+    expect(Math.abs(petBox.y + petBox.height - 6 - calendarBox.y)).toBeLessThan(2)
+    expect(petBox.x).toBeGreaterThanOrEqual(gridBox.x - 1)
+  }
   await page.clock.setSystemTime(new Date('2026-09-05T11:59:58Z'))
   await page.clock.runFor(1000)
   await expect(pet).toBeVisible()
   await page.clock.runFor(1000)
-  await expect(page.getByRole('img', { name: 'くちぱっち：おやすみ中' })).toBeVisible()
+  await expect(pet).toHaveAttribute('aria-label', 'くちぱっち：おやすみ中')
   await page.screenshot({ path: testInfo.outputPath('sleeping.png'), fullPage: true })
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await expect(page.locator('.pet-body')).toHaveCSS('animation-name', 'none')
-  await expect(page.locator('.pet-eyes-closed')).toHaveCSS('opacity', '1')
+  await expect(pet.locator('.pet-body')).toHaveCSS('animation-name', 'none')
+  await expect(pet.locator('.pet-eyes-closed')).toHaveCSS('opacity', '1')
   await page.clock.setSystemTime(new Date('2026-09-05T20:59:58Z'))
   await page.clock.runFor(1000)
-  await expect(page.getByRole('img', { name: 'くちぱっち：おやすみ中' })).toBeVisible()
+  await expect(pet).toHaveAttribute('aria-label', 'くちぱっち：おやすみ中')
   await page.clock.runFor(1000)
-  await expect(pet).toBeVisible()
-  await expect(page.locator('.pet-eyes-open')).toHaveCSS('opacity', '1')
-  await expect(page.locator('.pet-eyes-closed')).toHaveCSS('opacity', '0')
+  await expect(pet).toHaveAttribute('aria-label', mobile ? 'くちぱっち：お散歩中' : 'くちぱっち：足踏み中')
+  await expect(pet.locator('.pet-eyes-open')).toHaveCSS('opacity', '1')
+  await expect(pet.locator('.pet-eyes-closed')).toHaveCSS('opacity', '0')
 })
 
-test('walks back and forth within the space after the clock and pauses at night', async ({ page }) => {
+test('walks back and forth within the space after the clock and pauses at night', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'the clock-side lane is only used on the stacked layout')
   await mockApis(page)
   await page.goto('/')
-  const pet = page.locator('.kuchipatchi')
+  const pet = page.locator('.clock-face .kuchipatchi')
   await expect(pet).toBeVisible()
   const samples = await pet.evaluate(el => {
     const svg = el.querySelector('svg')!
@@ -179,6 +191,46 @@ test('walks back and forth within the space after the clock and pauses at night'
   await expect(pet.locator('.pet-direction')).toHaveCSS('animation-play-state', 'paused')
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(pet.locator('svg')).toHaveCSS('animation-name', 'none')
+})
+
+test('walks the seam rightward, jumps the column gap and wraps from the right edge to the left', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'the seam only exists in the two-column layout')
+  await mockApis(page)
+  await page.goto('/')
+  const runner = page.locator('.pet-rail-runner')
+  await expect(runner).toBeVisible()
+  const grid = (await page.locator('.dashboard-grid').boundingBox())!
+  const calendar = (await page.locator('.calendar-panel').boundingBox())!
+  const rate = (await page.locator('.rate-panel').boundingBox())!
+  const gapStart = calendar.x + calendar.width, gapEnd = rate.x
+  let previous = -Infinity, jumpedGap = false, wrapped = false, walkedOnGround = 0
+  for (let i = 0; i < 220 && !wrapped; i++) {
+    await page.clock.runFor(200)
+    const box = (await runner.boundingBox())!
+    const jumping = (await runner.getAttribute('data-jumping')) === 'true'
+    const center = box.x + box.width / 2
+    if (jumping) {
+      if (center > gapStart - 60 && center < gapEnd + 60) jumpedGap = true
+      expect(box.y + box.height - 6).toBeLessThan(calendar.y + 1)
+    } else {
+      // On the ground the feet rest on the lower row's top edge and never inside the gap.
+      expect(Math.abs(box.y + box.height - 6 - calendar.y)).toBeLessThan(2)
+      expect(center < gapStart - 1 || center > gapEnd + 1).toBe(true)
+      walkedOnGround++
+    }
+    if (box.x < previous - 200) wrapped = true
+    else expect(box.x).toBeGreaterThanOrEqual(previous - .5)
+    expect(box.x + box.width).toBeLessThanOrEqual(grid.x + grid.width + box.width)
+    previous = box.x
+  }
+  expect(walkedOnGround).toBeGreaterThan(20)
+  expect(jumpedGap).toBe(true)
+  expect(wrapped).toBe(true)
+  await page.clock.setSystemTime(new Date('2026-09-05T12:00:00Z'))
+  await page.clock.runFor(1000)
+  const frozen = (await runner.boundingBox())!.x
+  await page.clock.runFor(2000)
+  expect((await runner.boundingBox())!.x).toBe(frozen)
 })
 
 test('switches the room and panel palette at the JST time bands', async ({ page }, testInfo) => {
