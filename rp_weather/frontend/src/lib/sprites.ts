@@ -10,8 +10,16 @@ export interface Sprite {
   body: Layer[]
   eyesOpen: Layer[]
   eyesClosed: Layer[]
+  /** Colors for the shared feet; ignored when the sprite brings its own feet layers. */
   feet: { outline: string; fill: string }
   zzz: string
+  /** Grid size; defaults to 40x40. A coarser grid shows bigger dots in the same 80px box. */
+  width?: number
+  height?: number
+  /** Own feet (left/right step independently) and shadow, for sprites not on the 40x40 grid. */
+  feetLeft?: Layer[]
+  feetRight?: Layer[]
+  shadow?: Rect[]
 }
 export type SpriteName = 'mametchi' | 'memetchi' | 'oyajitchi' | 'gozarutchi' | 'ringotchi' | 'furawatchi' | 'ichigotchi'
 
@@ -19,28 +27,76 @@ export const SPRITE_SIZE = 40
 const NAVY = '#1c2a63'
 const ZZZ = '#d4e4be'
 
+/** Turns a character grid (one string per row) into layers, one per palette color, as horizontal runs. */
+export function gridToLayers(rows: string[], palette: Record<string, string>): Layer[] {
+  const layers = new Map<string, Rect[]>()
+  rows.forEach((row, y) => {
+    let x = 0
+    while (x < row.length) {
+      const ch = row[x]!
+      let w = 1
+      while (x + w < row.length && row[x + w] === ch) w++
+      if (palette[ch]) (layers.get(ch) ?? layers.set(ch, []).get(ch)!).push([x, y, w, 1])
+      x += w
+    }
+  })
+  return [...layers].map(([ch, rects]) => ({ fill: palette[ch]!, rects }))
+}
+
 /** Converts rectangles into one SVG path so each layer is a single node. */
 export function rectsToPath(rects: Rect[]): string {
   return rects.map(([x, y, w, h]) => `M${x} ${y}h${w}v${h}h-${w}z`).join('')
 }
 
+// Mametchi is drawn on the 28x28 grid of the reference bead chart (30 rows including the shadow), so its dots
+// are a little bigger than the 40x40 characters. '.' transparent, n navy, y yellow, p pink, w white.
+const MAMETCHI_PALETTE = { n: NAVY, y: '#ffe45c', p: '#ffb3c6', w: '#ffffff' }
 const mametchi: Sprite = {
-  name: 'mametchi', label: 'まめっち',
-  body: [
-    // Proportions from the reference: ears at the outer edges, a solid cap, a head far wider than the body,
-    // big white eyes with navy pupils, and short arms out to the sides.
-    { fill: NAVY, rects: [[7, 1, 7, 7], [26, 1, 7, 7], [5, 7, 30, 7], [3, 13, 34, 13], [13, 26, 14, 6], [8, 26, 5, 4], [27, 26, 5, 4]] },
-    { fill: '#ffe45c', rects: [[4, 14, 32, 11], [14, 27, 12, 4], [9, 27, 3, 2], [28, 27, 3, 2]] },
-    { fill: NAVY, rects: [[19, 20, 2, 2], [18, 23, 4, 1]] },
-  ],
-  eyesOpen: [
-    { fill: NAVY, rects: [[6, 14, 10, 10], [24, 14, 10, 10]] },
-    { fill: '#ffffff', rects: [[7, 15, 8, 8], [25, 15, 8, 8]] },
-    { fill: NAVY, rects: [[11, 16, 3, 6], [29, 16, 3, 6]] },
-    { fill: '#ffffff', rects: [[12, 17, 1, 2], [30, 17, 1, 2]] },
-  ],
-  eyesClosed: [{ fill: NAVY, rects: [[7, 19, 8, 1], [25, 19, 8, 1]] }],
-  feet: { outline: NAVY, fill: '#ffe45c' }, zzz: ZZZ,
+  name: 'mametchi', label: 'まめっち', width: 28, height: 30,
+  body: gridToLayers([
+    '.......nnnn.....nnnn........',
+    '......nnnnnn...nnnnnn.......',
+    '.....nnnnnnn...nnnnnnn......',
+    '.....nnnnnnn...nnnnnnn......',
+    '.....nnnnnnn...nnnnnnn......',
+    '.....nnnnnnn...nnnnnnn......',
+    '.....nnnnnnnn.nnnnnnnn......',
+    '.....nnnnnnnnnnnnnnnnn......',
+    '....nnnnnnnnnnnnnnnnnnn.....',
+    '...nnnnnnnnnnnnnnnnnnnnn....',
+    '..nyyyyyyyyyyyyyyyyyyyyyn...',
+    '.nyyyyyyyyyyyyyyyyyyyyyyyn..',
+    '.nyyyyyyyyyyyyyyyyyyyyyyyn..',
+    '.nyyyyyyyyyyyyyyyyyyyyyyyn..',
+    '.nyyyyyyyyyyyyyyyyyyyyyyyn..',
+    '.nyyyyyyyyyyyyyyyyyyyyyyyn..',
+    '..nyyyyyyyyyyyyyyyyyyyyyn...',
+    '..nyppyyyyynynyyyyyyyppyn...',
+    '...nyyyyyyyynyyyyyyyyyyn....',
+    '....nnnnnnnnnnnnnnnnnnn.....',
+    '........nnnnnnnnnnn.........',
+    '.......nnyyyyyyyyynn........',
+    '......nnyyyyyyyyyyynn.......',
+    '......nnyyyyyyyyyyynn.......',
+    '.......nnyyyyyyyyynn........',
+    '........nyyyyyyyyyn.........',
+    '............yyy.............',
+  ], MAMETCHI_PALETTE),
+  eyesOpen: gridToLayers([
+    '', '', '', '', '', '', '', '', '', '', '',
+    '.....nnnnn.....nnnnn........',
+    '....nnnnnwn...nnnnnwn.......',
+    '....nwnnnwn...nwnnnwn.......',
+    '....nwnnnwn...nwnnnwn.......',
+    '....nnnnnnn...nnnnnnn.......',
+    '.....nnnnn.....nnnnn........',
+  ], MAMETCHI_PALETTE),
+  eyesClosed: [{ fill: NAVY, rects: [[4, 14, 7, 1], [15, 14, 7, 1]] }],
+  feet: { outline: NAVY, fill: '#ffe45c' },
+  feetLeft: [{ fill: NAVY, rects: [[8, 26, 4, 2]] }],
+  feetRight: [{ fill: NAVY, rects: [[15, 26, 4, 2]] }],
+  shadow: [[7, 28, 13, 1]],
+  zzz: ZZZ,
 }
 
 const memetchi: Sprite = {

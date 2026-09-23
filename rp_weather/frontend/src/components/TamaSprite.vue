@@ -1,31 +1,36 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { FEET, SHADOW, SPRITES, SPRITE_SIZE, ZZZ_PATH, rectsToPath, type SpriteName } from '../lib/sprites'
+import { FEET, SHADOW, SPRITES, SPRITE_SIZE, ZZZ_PATH, rectsToPath, type Layer, type SpriteName } from '../lib/sprites'
 
 defineOptions({ name: 'TamaSprite' })
 const props = withDefaults(defineProps<{ name: SpriteName; facing?: 'left' | 'right'; moving?: boolean; sleeping?: boolean }>(), { facing: 'right', moving: false, sleeping: false })
 const sprite = computed(() => SPRITES[props.name])
 const state = computed(() => props.sleeping ? 'おやすみ中' : props.moving ? 'お散歩中' : '足踏み中')
-const feetOutline = rectsToPath([...FEET.left.outline, ...FEET.right.outline])
-const shadow = rectsToPath(SHADOW)
+const width = computed(() => sprite.value.width ?? SPRITE_SIZE)
+const height = computed(() => sprite.value.height ?? SPRITE_SIZE)
+// Sprites on the default grid share one pair of feet and one shadow; others bring their own.
+const feetLeft = computed<Layer[]>(() => sprite.value.feetLeft ?? [{ fill: sprite.value.feet.outline, rects: FEET.left.outline }, { fill: sprite.value.feet.fill, rects: FEET.left.fill }])
+const feetRight = computed<Layer[]>(() => sprite.value.feetRight ?? [{ fill: sprite.value.feet.outline, rects: FEET.right.outline }, { fill: sprite.value.feet.fill, rects: FEET.right.fill }])
+const shadow = computed(() => rectsToPath(sprite.value.shadow ?? SHADOW))
+// The Zzz glyph was drawn for the 40-unit grid; scale it to sit at the top right of any grid.
+const zzzTransform = computed(() => width.value === SPRITE_SIZE ? undefined : `translate(${width.value - 12} 0) scale(${(width.value / SPRITE_SIZE).toFixed(3)}) translate(-28 0)`)
 </script>
 
 <template>
   <!-- Shared pixel sprite: rectangles from sprites.ts, with the same stepping, blinking and sleeping motion for every character. -->
   <div class="tama-sprite" :class="{ 'is-sleeping': sleeping, 'is-moving': moving }" :data-sprite="name" role="img" :aria-label="`${sprite.label}：${state}`">
-    <svg :viewBox="`0 0 ${SPRITE_SIZE} ${SPRITE_SIZE}`" shape-rendering="crispEdges" aria-hidden="true">
+    <svg :viewBox="`0 0 ${width} ${height}`" shape-rendering="crispEdges" aria-hidden="true">
       <path fill="#10201d" opacity=".35" :d="shadow" />
-      <g :transform="facing === 'left' ? `translate(${SPRITE_SIZE} 0) scale(-1 1)` : undefined">
-        <g class="ts-foot ts-foot-left"><path :fill="sprite.feet.outline" :d="rectsToPath(FEET.left.outline)" /><path :fill="sprite.feet.fill" :d="rectsToPath(FEET.left.fill)" /></g>
-        <g class="ts-foot ts-foot-right"><path :fill="sprite.feet.outline" :d="rectsToPath(FEET.right.outline)" /><path :fill="sprite.feet.fill" :d="rectsToPath(FEET.right.fill)" /></g>
+      <g :transform="facing === 'left' ? `translate(${width} 0) scale(-1 1)` : undefined">
+        <g class="ts-foot ts-foot-left"><path v-for="(layer, index) in feetLeft" :key="index" :fill="layer.fill" :d="rectsToPath(layer.rects)" /></g>
+        <g class="ts-foot ts-foot-right"><path v-for="(layer, index) in feetRight" :key="index" :fill="layer.fill" :d="rectsToPath(layer.rects)" /></g>
         <g class="ts-body">
           <path v-for="(layer, index) in sprite.body" :key="index" :fill="layer.fill" :d="rectsToPath(layer.rects)" />
           <g class="ts-eyes-open"><path v-for="(layer, index) in sprite.eyesOpen" :key="index" :fill="layer.fill" :d="rectsToPath(layer.rects)" /></g>
           <g class="ts-eyes-closed"><path v-for="(layer, index) in sprite.eyesClosed" :key="index" :fill="layer.fill" :d="rectsToPath(layer.rects)" /></g>
         </g>
-        <path v-if="sleeping" class="ts-zzz" :fill="sprite.zzz" :d="ZZZ_PATH" />
+        <path v-if="sleeping" class="ts-zzz" :fill="sprite.zzz" :d="ZZZ_PATH" :transform="zzzTransform" />
       </g>
-      <path v-if="false" :d="feetOutline" />
     </svg>
   </div>
 </template>
