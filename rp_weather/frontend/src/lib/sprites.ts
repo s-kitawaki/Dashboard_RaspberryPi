@@ -1,6 +1,7 @@
 /**
- * Front-facing 40x40 pixel sprites, authored as integer rectangles so they stay crisp and easy to edit.
- * Feet sit on rows 31-36 like Kuchipatchi so every character stands on the same ground line.
+ * Front-facing pixel sprites. Each character is transcribed cell by cell from its bead chart on its own grid
+ * (28 to 40 cells wide), so the dots are slightly different sizes in the shared 80px box. Layers are integer
+ * rectangles; gridToLayers turns the readable character rows into those rectangles.
  */
 export type Rect = [x: number, y: number, w: number, h: number]
 export interface Layer { fill: string; rects: Rect[] }
@@ -199,7 +200,6 @@ const memetchi: Sprite = {
   zzz: ZZZ,
 }
 
-// Oyajitchi: transcribed cell by cell from its 27x31 bead chart (29 rows with the shadow). '.' transparent, k black, p pink.
 const OYAJITCHI_PALETTE = { k: '#2b2b2b', p: '#f4b0b0' }
 // Oyajitchi: transcribed cell by cell from its 27x31 bead chart (29 rows with the shadow). '.' transparent, k black, p pink.
 const oyajitchi: Sprite = {
@@ -270,7 +270,6 @@ const oyajitchi: Sprite = {
   zzz: ZZZ,
 }
 
-// Gozarutchi: transcribed cell by cell from its 35x35 bead chart (34 rows with the shadow). '.' transparent, b blue, c cream.
 const GOZARUTCHI_PALETTE = { b: '#1d4fa3', c: '#fff0b0' }
 // Gozarutchi: transcribed cell by cell from its 35x35 bead chart (34 rows with the shadow). '.' transparent, b blue, c cream.
 const gozarutchi: Sprite = {
@@ -351,7 +350,6 @@ const gozarutchi: Sprite = {
   zzz: ZZZ,
 }
 
-// Ringotchi: transcribed cell by cell from its 26x26 bead chart (28 rows with the shadow). '.' transparent, n navy, r red, c cream, p pink, g green.
 const RINGOTCHI_PALETTE = { n: '#1f4e8c', r: '#e8322e', c: '#fff6c8', p: '#ff9ab0', g: '#7cc32a' }
 // Ringotchi: transcribed cell by cell from its 26x26 bead chart (28 rows with the shadow). '.' transparent, n navy, r red, c cream, p pink, g green.
 const ringotchi: Sprite = {
@@ -508,20 +506,116 @@ const furawatchi: Sprite = {
   zzz: ZZZ,
 }
 
+// Ichigotchi: transcribed cell by cell from its 40x48 bead chart (48 rows with the shadow). '.' transparent, n navy, r red, c peach, p pink, g green.
+const ICHIGOTCHI_PALETTE = { n: NAVY, r: '#e0302a', c: '#f8d9b0', p: '#ff9ab0', g: '#4caf50' }
 const ichigotchi: Sprite = {
-  name: 'ichigotchi', label: 'いちごっち',
-  body: [
-    { fill: NAVY, rects: [[18, 2, 4, 1], [16, 3, 8, 1], [14, 4, 12, 1], [12, 5, 16, 1], [10, 6, 20, 1], [8, 7, 24, 1], [6, 8, 28, 1], [5, 9, 30, 17], [6, 26, 28, 2], [8, 28, 24, 3]] },
-    { fill: '#e0302a', rects: [[18, 3, 4, 1], [16, 4, 8, 1], [14, 5, 12, 1], [12, 6, 16, 1], [10, 7, 20, 1], [8, 8, 24, 1], [6, 9, 28, 16], [7, 25, 26, 2], [9, 27, 22, 2], [10, 29, 20, 1]] },
-    { fill: NAVY, rects: [[14, 8, 1, 1], [21, 7, 1, 1], [26, 10, 1, 1], [9, 12, 1, 1], [31, 14, 1, 1], [8, 20, 1, 1], [30, 22, 1, 1]] },
-    { fill: NAVY, rects: [[11, 12, 18, 1], [10, 13, 1, 13], [29, 13, 1, 13], [11, 26, 18, 1]] },
-    { fill: '#f8d9b0', rects: [[11, 13, 18, 13]] },
-    { fill: '#ff9ab0', rects: [[12, 21, 3, 2], [25, 22, 3, 2]] },
-    { fill: NAVY, rects: [[19, 23, 2, 1]] },
-  ],
-  eyesOpen: [{ fill: NAVY, rects: [[14, 17, 3, 3], [23, 18, 3, 3]] }],
-  eyesClosed: [{ fill: NAVY, rects: [[14, 19, 3, 1], [23, 20, 3, 1]] }],
-  feet: { outline: NAVY, fill: '#4caf50' }, zzz: ZZZ,
+  name: 'ichigotchi', label: 'いちごっち', width: 40, height: 48,
+  body: gridToLayers([
+    '........................................',
+    '.................nnnnnn.................',
+    '.................nnnnnn.................',
+    '...............nnrrrrrrnn...............',
+    '..............nnrrrrrrrrrn..............',
+    '.............nnrrrrrrrrrrrnn............',
+    '............nnrrrrrrrrrrrrrrn...........',
+    '...........nnrrrrrrrrrrrrrrrnn..........',
+    '...........nrrrrrrrrrrrrrrrrrn..........',
+    '.........nnnrrrrrrrrrnrrrrnnrnn.........',
+    '........nnnrrrrrrrrrnrrrrnnrnnn.........',
+    '........nnnrrrrrrrrrrnrrrrnnrrnn........',
+    '........nrrrrrrrrrrrrrrrrrrrrrrn........',
+    '.......nnrrrrrrrrrrrrrrrnrrrrrrn........',
+    '.......nrrrrrrrrrrrrrrrrnrrrrrrnn.......',
+    '......nrrrrrrrrrrrrrrrrrrrrrrrrrn.......',
+    '......nrrrrrrrrrrrrrrrrrrrrrrnrrnn......',
+    '.....nnrrrrrrrrrrrrrrrrrrrrrrnrrrn......',
+    '.....nrrrrrrrnnnnnnnnnnnrrrrrrrrrn......',
+    '.....nrrrrrrrnnnnnnnnnnnrrrrrrrrrn......',
+    '....nnrrrrnnnncccccccccnnnnrrrrrrnnn....',
+    '....nrrrnnnccccccccccccccnnnrrrrrrnn....',
+    '...nnrrrncccccccccccccccccnnnrrrrrnnn...',
+    '...nrrrnccccccccccccccccccccnrrrrrrrn...',
+    '...nrrrnccccccccccccccccccccnnrrrrrrn...',
+    '...nrrnccccccccccccccccccccccnrrrrrrn...',
+    '.nnnrrnccccccccccccccccccccccnrrnrrrrn..',
+    '.nnnrrnccccccccccccccccccccccnrrnrrrrn..',
+    '.nnrrrnccccccccccccccccccccccnrrnrrrrn..',
+    '.nnrrnccccccccccccccccccccppcnrrrrrrrn..',
+    '.nnrrncccccccccccccccccppppccnrrrrrrrn..',
+    '.nnrrncccccccccccccccccpppppcnrrrrrrrn..',
+    '.nnrrncccppppcccnnnncccpppppcnrrrrrrrn..',
+    '.nnnrncccppppcccnnnncccccccccnrrrrrrnn..',
+    '...nrrnccppppcccnnnnccccccccnrrrrrrnn...',
+    '...nnrrncccccccccccccccccccnnrrrrrnnn...',
+    '...nnrrnccccccccccccccccccnnnrrrrrnnn...',
+    '....nrrnnccccccccccccccccnnnrrrrrrnn....',
+    '.....nnrrnnnccccccccccccnnrrrrrrnn......',
+    '......nnrrnnnnccccccnnnnrrrrrrrnn.......',
+    '.......nnnnrrnnnnnnnrrrrrrrrrnnn........',
+    '...........nnnnnnnnnnnnnnnnnn...........',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+  ], ICHIGOTCHI_PALETTE),
+  eyesOpen: gridToLayers([
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '.....................nnn................',
+    '.....................nnn................',
+    '.....................nnn................',
+    '.........nnnn........nnn................',
+    '.........nnnn...........................',
+    '.........nnnn...........................',
+    '.........nnnn...........................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+    '........................................',
+  ], ICHIGOTCHI_PALETTE),
+  eyesClosed: [{ fill: NAVY, rects: [[9,29,4,1],[21,26,3,1]] }],
+  feet: { outline: NAVY, fill: '#f8d9b0' },
+  feetLeft: [{fill: '#1c2a63',rects:[[12,42,1,1],[15,42,1,1],[9,43,1,1],[10,43,1,1],[11,43,1,1],[12,43,1,1],[15,43,1,1],[9,44,1,1],[10,44,1,1],[11,44,1,1],[12,44,1,1],[15,44,1,1],[8,45,1,1],[15,45,1,1],[9,46,1,1],[10,46,1,1],[11,46,1,1],[12,46,1,1],[13,46,1,1],[14,46,1,1],[15,46,1,1]]},{fill: '#4caf50',rects:[[13,42,1,1],[14,42,1,1],[13,43,1,1],[14,43,1,1],[13,44,1,1],[14,44,1,1],[9,45,1,1],[10,45,1,1],[11,45,1,1],[12,45,1,1],[13,45,1,1],[14,45,1,1]]}],
+  feetRight: [{fill: '#1c2a63',rects:[[24,42,1,1],[28,42,1,1],[29,42,1,1],[30,42,1,1],[24,43,1,1],[31,43,1,1],[24,44,1,1],[30,44,1,1],[25,45,1,1],[26,45,1,1],[31,45,1,1],[26,46,1,1],[27,46,1,1],[28,46,1,1],[29,46,1,1],[30,46,1,1],[31,46,1,1]]},{fill: '#4caf50',rects:[[25,42,1,1],[26,42,1,1],[27,42,1,1],[25,43,1,1],[26,43,1,1],[27,43,1,1],[28,43,1,1],[29,43,1,1],[30,43,1,1],[25,44,1,1],[26,44,1,1],[27,44,1,1],[28,44,1,1],[29,44,1,1],[27,45,1,1],[28,45,1,1],[29,45,1,1],[30,45,1,1]]}],
+  shadow: [[10,47,20,1]],
+  zzz: ZZZ,
 }
 
 export const SPRITES: Record<SpriteName, Sprite> = { mametchi, memetchi, oyajitchi, gozarutchi, ringotchi, furawatchi, ichigotchi }
