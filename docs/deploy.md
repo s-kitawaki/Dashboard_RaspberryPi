@@ -35,10 +35,11 @@ Terraform の変数は `rp_weather/infra/terraform.tfvars`、state は `rp_weath
 pwsh
 $env:Path = 'C:\Program Files\nodejs;' + $env:Path
 $env:CLOUDFLARE_API_TOKEN = Read-Host 'Cloudflare API token' -MaskInput
-.\rp_weather\scripts\deploy-pages.ps1
+Push-Location C:\Works_local\raspberrPi_Dashboard\Dashboard_RaspberryPi\rp_weather\frontend; npm ci; npm run lint; npm run build; Pop-Location
+C:\Works_local\raspberrPi_Dashboard\Dashboard_RaspberryPi\rp_weather\scripts\deploy-pages.ps1
 ```
 
-ビルドが未実行なら、3行目と4行目の間で `Push-Location rp_weather\frontend; npm ci; npm run lint; npm run build; Pop-Location` を実行します。以下は各行の意味と、Worker やインフラも更新する場合の詳しい手順です。
+パスは絶対パスなので、どのディレクトリから始めても動きます。相対パスだと `rp_weather` の中から実行したときに `rp_weather\rp_weather\frontend` を探して失敗します。ビルド済みなら4行目は省けます。以下は各行の意味と、Worker やインフラも更新する場合の詳しい手順です。
 
 ### 1. リポジトリのルートへ移動
 
