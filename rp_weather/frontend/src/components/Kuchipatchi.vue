@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { japanDate } from '../lib/time'
+import { isSleepHour } from '../lib/room'
 
 defineOptions({ name: 'KuchipatchiPet' })
 const props = withDefaults(defineProps<{ now: Date; facing?: 'front' | 'left' | 'right'; walking?: boolean }>(), { facing: 'front' })
-const sleeping = computed(() => {
-  const hour = Number(japanDate(props.now).hour)
-  return hour >= 22 || hour < 7
-})
+// Bedtime follows the room: asleep while the bedroom scene is shown (21:00-5:59 JST).
+const sleeping = computed(() => isSleepHour(Number(japanDate(props.now).hour)))
 </script>
 
 <template>

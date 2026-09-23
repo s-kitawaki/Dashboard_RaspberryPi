@@ -25,6 +25,14 @@ export const BrokenIcons: Story = { args: { weather: ready({ ...sampleWeather, i
 
 export const SleepingKuchipatchi: Story = { args: { now: new Date('2026-09-05T13:00:00Z') } }
 
+// Room phases (JST): 6-10 morning, 11-13 day, 14-16 evening, 17-20 night, 21-5 bedroom.
+export const MorningRoom: Story = { args: { now: new Date('2026-09-04T23:30:00Z') } }
+export const DayRoom: Story = { args: { now: new Date('2026-09-05T03:15:00Z') } }
+export const EveningRoom: Story = { args: { now: new Date('2026-09-05T06:40:00Z') } }
+export const NightRoom: Story = { args: { now: new Date('2026-09-05T10:20:00Z') } }
+export const BedroomRoom: Story = { args: { now: new Date('2026-09-05T13:40:00Z') } }
+export const StillRoom: Story = { args: { roomAnimated: false, petWalking: false, petFacing: 'front' } }
+
 export const LeftKuchipatchi: Story = { args: { petFacing: 'left' } }
 export const RightKuchipatchi: Story = { args: { petFacing: 'right' } }
 
