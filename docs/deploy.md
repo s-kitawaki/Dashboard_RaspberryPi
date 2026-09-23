@@ -27,7 +27,18 @@ Terraform の変数は `rp_weather/infra/terraform.tfvars`、state は `rp_weath
 
 ## 共通の準備
 
-毎回、PowerShell 7（`pwsh`）で次を実行してから各手順に進みます。プロンプトが `PS C:\...>` になっていることを確認してください。`C:\...>` の場合はコマンドプロンプトなので `pwsh` と入力して切り替えます。
+毎回、最初に `pwsh` と入力して PowerShell 7 に入ってから始めます。Windows 標準の PowerShell 5.1（`powershell`）やコマンドプロンプトでは、この後のスクリプトが「#requires」のエラーで実行できません。プロンプトが `PS` でも 5.1 のことがあるので、`$PSVersionTable.PSVersion` が 7 系であることを確認してください。
+
+画面だけを更新する場合の最短手順は次の4行です。上から順に貼り付けます。
+
+```powershell
+pwsh
+$env:Path = 'C:\Program Files\nodejs;' + $env:Path
+$env:CLOUDFLARE_API_TOKEN = Read-Host 'Cloudflare API token' -MaskInput
+.\rp_weather\scripts\deploy-pages.ps1
+```
+
+ビルドが未実行なら、3行目と4行目の間で `Push-Location rp_weather\frontend; npm ci; npm run lint; npm run build; Pop-Location` を実行します。以下は各行の意味と、Worker やインフラも更新する場合の詳しい手順です。
 
 ### 1. リポジトリのルートへ移動
 
@@ -169,6 +180,7 @@ Cloudflare ダッシュボードの Workers & Pages → `rp-weather-api` → Log
 | 症状 | 原因 | 対処 |
 | --- | --- | --- |
 | `'Get-Content' is not recognized` | コマンドプロンプトで実行している | `pwsh` と入力して PowerShell 7 に切り替える |
+| `#requires` で PowerShell 7.0 用と言われ実行できない | Windows PowerShell 5.1 で実行している（`PS` プロンプトでも 5.1 のことがある） | `pwsh` と入力して 7 に入り、環境変数を設定し直してから再実行する |
 | `terraform` が見つからない | 新しい PATH が反映されていない | ターミナルを開き直す |
 | `npm WARN EBADENGINE` の後に失敗 | Node 20 が使われている | 共通の準備の手順2を実行する |
 | `EPERM: operation not permitted, unlink ... esbuild.exe` | 開発サーバーが起動中 | 停止してから再実行する |
