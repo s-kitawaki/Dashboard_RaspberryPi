@@ -174,3 +174,6 @@ button:focus-visible { outline: 2px solid var(--panel-line) !important; outline-
   .currency-symbols { display: flex; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+/* Kuchipatchi: on two-column layouts it walks the seam between the rows; on stacked layouts it stays beside the clock. */
+@media (min-width: 900px) { .clock-face .kuchipatchi { display: none; } }
+@media (max-width: 899px) { .pet-rail { display: none; } }

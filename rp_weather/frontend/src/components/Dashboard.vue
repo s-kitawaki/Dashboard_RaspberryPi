@@ -6,6 +6,7 @@ import { japanDate, weekdays } from '../lib/time'
 import { phaseAt, type RoomPhase } from '../lib/room'
 import CalendarPanel from './CalendarPanel.vue'
 import Kuchipatchi from './Kuchipatchi.vue'
+import KuchipatchiRail from './KuchipatchiRail.vue'
 import DataStatus from './DataStatus.vue'
 import RoomBackground from './RoomBackground.vue'
 import RoomStage from './RoomStage.vue'
@@ -73,6 +74,8 @@ const slots = computed(() => Array.from({ length: FORECAST_SLOTS }, (_, i) => pr
 
         <RoomStage :phase="phase" :animated="roomAnimated" />
       </div>
+      <!-- Two-column layouts: Kuchipatchi walks the seam between the rows instead of the clock panel (CSS swaps them at 900px). -->
+      <KuchipatchiRail :now="now" :animated="petWalking !== false" />
     </main>
   </div>
 </template>
