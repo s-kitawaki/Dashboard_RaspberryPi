@@ -27,13 +27,19 @@ export function rectsToPath(rects: Rect[]): string {
 const mametchi: Sprite = {
   name: 'mametchi', label: 'まめっち',
   body: [
-    // Tall ears and a navy cap over a head that is wider than the body; arms stick out at the sides.
-    { fill: NAVY, rects: [[9, 1, 6, 6], [25, 1, 6, 6], [8, 6, 24, 7], [6, 12, 28, 14], [12, 26, 16, 6], [8, 26, 5, 4], [27, 26, 5, 4]] },
-    { fill: '#ffe45c', rects: [[7, 13, 26, 12], [13, 27, 14, 4], [9, 27, 3, 2], [28, 27, 3, 2]] },
-    { fill: NAVY, rects: [[19, 21, 2, 1]] },
+    // Proportions from the reference: ears at the outer edges, a solid cap, a head far wider than the body,
+    // big white eyes with navy pupils, and short arms out to the sides.
+    { fill: NAVY, rects: [[7, 1, 7, 7], [26, 1, 7, 7], [5, 7, 30, 7], [3, 13, 34, 13], [13, 26, 14, 6], [8, 26, 5, 4], [27, 26, 5, 4]] },
+    { fill: '#ffe45c', rects: [[4, 14, 32, 11], [14, 27, 12, 4], [9, 27, 3, 2], [28, 27, 3, 2]] },
+    { fill: NAVY, rects: [[19, 20, 2, 2], [18, 23, 4, 1]] },
   ],
-  eyesOpen: [{ fill: NAVY, rects: [[9, 14, 7, 8], [24, 14, 7, 8]] }, { fill: '#ffffff', rects: [[13, 16, 2, 4], [28, 16, 2, 4]] }],
-  eyesClosed: [{ fill: NAVY, rects: [[9, 18, 7, 1], [24, 18, 7, 1]] }],
+  eyesOpen: [
+    { fill: NAVY, rects: [[6, 14, 10, 10], [24, 14, 10, 10]] },
+    { fill: '#ffffff', rects: [[7, 15, 8, 8], [25, 15, 8, 8]] },
+    { fill: NAVY, rects: [[11, 16, 3, 6], [29, 16, 3, 6]] },
+    { fill: '#ffffff', rects: [[12, 17, 1, 2], [30, 17, 1, 2]] },
+  ],
+  eyesClosed: [{ fill: NAVY, rects: [[7, 19, 8, 1], [25, 19, 8, 1]] }],
   feet: { outline: NAVY, fill: '#ffe45c' }, zzz: ZZZ,
 }
 
