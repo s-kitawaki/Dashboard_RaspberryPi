@@ -506,8 +506,8 @@ const furawatchi: Sprite = {
   zzz: ZZZ,
 }
 
-// Ichigotchi: transcribed cell by cell from its 40x48 bead chart (48 rows with the shadow). '.' transparent, n navy, r red, c peach, p pink, g green.
 const ICHIGOTCHI_PALETTE = { n: NAVY, r: '#e0302a', c: '#f8d9b0', p: '#ff9ab0', g: '#4caf50' }
+// Ichigotchi: transcribed cell by cell from its 40x48 bead chart (48 rows with the shadow). '.' transparent, n navy, r red, c peach, p pink, g green.
 const ichigotchi: Sprite = {
   name: 'ichigotchi', label: 'いちごっち', width: 40, height: 48,
   body: gridToLayers([
@@ -540,12 +540,12 @@ const ichigotchi: Sprite = {
     '.nnnrrnccccccccccccccccccccccnrrnrrrrn..',
     '.nnnrrnccccccccccccccccccccccnrrnrrrrn..',
     '.nnrrrnccccccccccccccccccccccnrrnrrrrn..',
-    '.nnrrnccccccccccccccccccccppcnrrrrrrrn..',
-    '.nnrrncccccccccccccccccppppccnrrrrrrrn..',
-    '.nnrrncccccccccccccccccpppppcnrrrrrrrn..',
-    '.nnrrncccppppcccnnnncccpppppcnrrrrrrrn..',
-    '.nnnrncccppppcccnnnncccccccccnrrrrrrnn..',
-    '...nrrnccppppcccnnnnccccccccnrrrrrrnn...',
+    '.nnrrncccccccccccccccccccccccnrrrrrrrn..',
+    '.nnrrncccccccccccccccccccccccnrrrrrrrn..',
+    '.nnrrncccccccccccccccccccccccnrrrrrrrn..',
+    '.nnrrncccccccccnccccncccccpccnrrrrrrrn..',
+    '.nnnrncccpccccccnnnncccccccccnrrrrrrnn..',
+    '...nrrncccccccccccccccccccccnrrrrrrnn...',
     '...nnrrncccccccccccccccccccnnrrrrrnnn...',
     '...nnrrnccccccccccccccccccnnnrrrrrnnn...',
     '....nrrnnccccccccccccccccnnnrrrrrrnn....',
