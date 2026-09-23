@@ -231,3 +231,13 @@ test('the room resident walks inside the stage and rests between destinations', 
   const distinct = new Set(positions.map(p => `${Math.round(p.x)},${Math.round(p.y)}`))
   expect(distinct.size).toBeGreaterThan(1)
 })
+
+test('shows no scrollbar on a desktop window where everything fits', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1100 })
+  await mockApis(page)
+  await page.goto('/')
+  await expect(page.locator('.rate-value')).toHaveText('147.82円')
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflowY)).toBe('auto')
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true)
+  expect(await page.evaluate(() => innerWidth - document.documentElement.clientWidth)).toBe(0)
+})

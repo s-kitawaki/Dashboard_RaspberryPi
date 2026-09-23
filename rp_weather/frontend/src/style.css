@@ -1,5 +1,7 @@
 :root { font-family: 'DotGothic16', 'Noto Sans JP', 'Yu Gothic UI', 'Meiryo', sans-serif; color-scheme: dark; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 * { box-sizing: border-box; }
+/* Vuetify forces overflow-y: scroll on html, which shows a scrollbar even when nothing scrolls. */
+html { overflow-y: auto !important; }
 body { margin: 0; min-width: 320px; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible { outline: 2px solid var(--panel-line) !important; outline-offset: 4px; }
