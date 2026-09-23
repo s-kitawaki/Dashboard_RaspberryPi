@@ -31,9 +31,8 @@ export const DayRoom: Story = { args: { now: new Date('2026-09-05T03:15:00Z') } 
 export const EveningRoom: Story = { args: { now: new Date('2026-09-05T06:40:00Z') } }
 export const NightRoom: Story = { args: { now: new Date('2026-09-05T10:20:00Z') } }
 export const BedroomRoom: Story = { args: { now: new Date('2026-09-05T13:40:00Z') } }
-export const StillRoom: Story = { args: { roomAnimated: false, petWalking: false, petFacing: 'front' } }
+export const StillRoom: Story = { args: { roomAnimated: false, petWalking: false } }
 
-export const LeftKuchipatchi: Story = { args: { petFacing: 'left' } }
-export const RightKuchipatchi: Story = { args: { petFacing: 'right' } }
-
-export const FrontKuchipatchi: Story = { args: { petWalking: false, petFacing: 'front' } }
+// Seam walkers are drawn per day; pin them here to look at specific pairs.
+export const RareOyajitchi: Story = { args: { railWalkers: ['oyajitchi', 'mametchi'] } }
+export const StillWalkers: Story = { args: { petWalking: false, roomAnimated: false } }

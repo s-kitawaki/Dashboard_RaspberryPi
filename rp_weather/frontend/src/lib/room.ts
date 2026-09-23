@@ -36,8 +36,8 @@ export type Behavior = 'walk' | 'brush' | 'sleep'
 
 export interface PhaseRoom {
   behavior: Behavior
-  /** Fixed spot for stationary behaviors. */
-  spot?: Spot
+  /** Fixed spots for stationary behaviors, one per resident (wraps around if there are more residents). */
+  spots?: Spot[]
   /** A spot the walker prefers (for example the television at night). */
   favorite?: Spot
 }
@@ -46,11 +46,17 @@ export interface PhaseRoom {
 export const FLOOR_BAND: FloorBand = { x: [12, 88], y: [56, 88] }
 
 export const PHASE_ROOMS: Record<RoomPhase, PhaseRoom> = {
-  morning: { behavior: 'brush', spot: { x: 42, y: 80 } },
+  morning: { behavior: 'brush', spots: [{ x: 38, y: 80 }, { x: 62, y: 80 }] },
   day: { behavior: 'walk' },
   evening: { behavior: 'walk' },
   night: { behavior: 'walk', favorite: { x: 80, y: 66 } },
-  bedroom: { behavior: 'sleep', spot: { x: 50, y: 62 } },
+  bedroom: { behavior: 'sleep', spots: [{ x: 36, y: 62 }, { x: 60, y: 62 }] },
+}
+
+/** Where resident `index` stands during a stationary phase. */
+export function spotFor(room: PhaseRoom, index: number): Spot | undefined {
+  if (!room.spots?.length) return undefined
+  return room.spots[index % room.spots.length]
 }
 
 export interface Walker {

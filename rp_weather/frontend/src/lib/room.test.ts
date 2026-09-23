@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { FLOOR_BAND, PHASE_ROOMS, createWalker, depthScale, isSleepHour, phaseAt, phaseForHour, pickTarget, stepWalker, type Walker } from './room'
+import { FLOOR_BAND, PHASE_ROOMS, createWalker, depthScale, isSleepHour, phaseAt, phaseForHour, pickTarget, spotFor, stepWalker, type Walker } from './room'
 
 describe('room phases', () => {
   it.each([
@@ -19,12 +19,18 @@ describe('room phases', () => {
     expect(isSleepHour(5)).toBe(true)
     expect(isSleepHour(6)).toBe(false)
   })
-  it('pins stationary phases to a spot inside the floor band', () => {
+  it('pins stationary phases to distinct spots inside the stage and wraps for extra residents', () => {
     for (const phase of ['morning', 'bedroom'] as const) {
-      const spot = PHASE_ROOMS[phase].spot!
-      expect(spot.x).toBeGreaterThanOrEqual(0); expect(spot.x).toBeLessThanOrEqual(100)
-      expect(spot.y).toBeGreaterThanOrEqual(0); expect(spot.y).toBeLessThanOrEqual(100)
+      const spots = PHASE_ROOMS[phase].spots!
+      expect(spots.length).toBeGreaterThanOrEqual(2)
+      for (const spot of spots) {
+        expect(spot.x).toBeGreaterThanOrEqual(0); expect(spot.x).toBeLessThanOrEqual(100)
+        expect(spot.y).toBeGreaterThanOrEqual(0); expect(spot.y).toBeLessThanOrEqual(100)
+      }
+      expect(spotFor(PHASE_ROOMS[phase], 0)).not.toEqual(spotFor(PHASE_ROOMS[phase], 1))
+      expect(spotFor(PHASE_ROOMS[phase], spots.length)).toEqual(spots[0])
     }
+    expect(spotFor(PHASE_ROOMS.day, 0)).toBeUndefined()
     expect(PHASE_ROOMS.night.favorite).toBeDefined()
   })
 })

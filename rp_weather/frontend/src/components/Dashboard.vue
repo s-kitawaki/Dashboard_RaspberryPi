@@ -4,9 +4,11 @@ import { mdiWeatherPartlyCloudy, mdiArrowRight } from '@mdi/js'
 import type { Weather, Forecast, Rate, ResourceState } from '../lib/api'
 import { japanDate, weekdays } from '../lib/time'
 import { phaseAt, type RoomPhase } from '../lib/room'
+import { dailySeed, railWalkersForSeed } from '../lib/lottery'
+import type { SpriteName } from '../lib/sprites'
+import type { Resident } from './RoomStage.vue'
 import CalendarPanel from './CalendarPanel.vue'
-import Kuchipatchi from './Kuchipatchi.vue'
-import KuchipatchiRail from './KuchipatchiRail.vue'
+import SeamRail from './SeamRail.vue'
 import DataStatus from './DataStatus.vue'
 import RoomBackground from './RoomBackground.vue'
 import RoomStage from './RoomStage.vue'
@@ -14,12 +16,15 @@ import WeatherIcon from './WeatherIcon.vue'
 
 defineOptions({ name: 'DailyDashboard' })
 const props = withDefaults(defineProps<{
-  now: Date; petWalking?: boolean; petFacing?: 'front' | 'left' | 'right'; roomAnimated?: boolean
+  now: Date; petWalking?: boolean; roomAnimated?: boolean; railWalkers?: SpriteName[]; residents?: Resident[]
   weather: ResourceState<Weather>; forecast: ResourceState<Forecast[]>; rate: ResourceState<Rate>
-}>(), { petWalking: true, roomAnimated: true })
+}>(), { petWalking: true, roomAnimated: true, railWalkers: undefined, residents: undefined })
 defineEmits<{ retryWeather: []; retryForecast: []; retryRate: [] }>()
 const japan = computed(() => japanDate(props.now))
 const phase = computed<RoomPhase>(() => phaseAt(props.now))
+// Today's seam walkers: keyed on the day's seed so the array only changes at midnight JST, not every clock tick.
+const daySeed = computed(() => dailySeed(props.now))
+const walkers = computed(() => props.railWalkers ?? railWalkersForSeed(daySeed.value))
 // The weather panel carries the next three forecast slots; the fourth is dropped for breathing room.
 const FORECAST_SLOTS = 3
 const slots = computed(() => Array.from({ length: FORECAST_SLOTS }, (_, i) => props.forecast.data?.[i] ?? null))
@@ -34,7 +39,6 @@ const slots = computed(() => Array.from({ length: FORECAST_SLOTS }, (_, i) => pr
           <p class="clock-date">{{ japan.year }}年 {{ japan.month }}月{{ japan.day }}日 <span>{{ weekdays[japan.weekday] }}曜日</span></p>
           <div class="clock-face">
           <time class="clock" :datetime="now.toISOString()" :aria-label="`日本時間 ${japan.hour}時${japan.minute}分${japan.second}秒`"><span>{{ japan.hour }}</span><span class="clock-colon">:</span><span>{{ japan.minute }}</span><span class="clock-seconds">{{ japan.second }}</span></time>
-          <Kuchipatchi :now="now" :facing="petFacing" :walking="petWalking !== false" />
           </div>
         </div>
       </v-card>
@@ -72,10 +76,10 @@ const slots = computed(() => Array.from({ length: FORECAST_SLOTS }, (_, i) => pr
           <DataStatus v-if="rate.error" :state="rate" label="為替" @retry="$emit('retryRate')" />
         </v-card>
 
-        <RoomStage :phase="phase" :animated="roomAnimated" />
+        <RoomStage :phase="phase" :animated="roomAnimated" :now="now" :residents="residents" />
       </div>
-      <!-- Two-column layouts: Kuchipatchi walks the seam between the rows instead of the clock panel (CSS swaps them at 900px). -->
-      <KuchipatchiRail :now="now" :animated="petWalking !== false" />
+      <!-- Two-column layouts only (hidden below 900px): today's two characters walk the seam between the rows. -->
+      <SeamRail :now="now" :walkers="walkers" :animated="petWalking !== false" />
     </main>
   </div>
 </template>
