@@ -272,6 +272,7 @@ const oyajitchi: Sprite = {
 
 // Gozarutchi: transcribed cell by cell from its 35x35 bead chart (34 rows with the shadow). '.' transparent, b blue, c cream.
 const GOZARUTCHI_PALETTE = { b: '#1d4fa3', c: '#fff0b0' }
+// Gozarutchi: transcribed cell by cell from its 35x35 bead chart (34 rows with the shadow). '.' transparent, b blue, c cream.
 const gozarutchi: Sprite = {
   name: 'gozarutchi', label: 'ござるっち', width: 35, height: 34,
   body: gridToLayers([
@@ -350,20 +351,72 @@ const gozarutchi: Sprite = {
   zzz: ZZZ,
 }
 
+// Ringotchi: transcribed cell by cell from its 26x26 bead chart (28 rows with the shadow). '.' transparent, n navy, r red, c cream, p pink, g green.
+const RINGOTCHI_PALETTE = { n: '#1f4e8c', r: '#e8322e', c: '#fff6c8', p: '#ff9ab0', g: '#7cc32a' }
 const ringotchi: Sprite = {
-  name: 'ringotchi', label: 'りんごっち',
-  body: [
-    { fill: '#1f4e8c', rects: [[20, 5, 2, 4], [9, 8, 22, 2], [7, 10, 26, 2], [5, 12, 30, 14], [7, 26, 26, 3], [9, 29, 22, 2]] },
-    { fill: '#7cc32a', rects: [[22, 5, 5, 2], [24, 4, 2, 1]] },
-    { fill: '#e8322e', rects: [[10, 9, 20, 2], [8, 11, 24, 2], [6, 13, 28, 12], [8, 25, 24, 3], [10, 28, 20, 2]] },
-    { fill: '#1f4e8c', rects: [[10, 14, 20, 1], [9, 15, 1, 11], [30, 15, 1, 11], [10, 26, 20, 1]] },
-    { fill: '#fff6c8', rects: [[10, 15, 20, 11]] },
-    { fill: '#ff9ab0', rects: [[11, 22, 2, 2], [27, 22, 2, 2]] },
-    { fill: '#1f4e8c', rects: [[19, 23, 2, 1]] },
-  ],
-  eyesOpen: [{ fill: '#1f4e8c', rects: [[13, 18, 3, 3], [24, 18, 3, 3]] }],
-  eyesClosed: [{ fill: '#1f4e8c', rects: [[13, 20, 3, 1], [24, 20, 3, 1]] }],
-  feet: { outline: '#1f4e8c', fill: '#e8322e' }, zzz: ZZZ,
+  name: 'ringotchi', label: 'りんごっち', width: 26, height: 28,
+  body: gridToLayers([
+    '.............nnnn.........',
+    '............nnggn.........',
+    '...........nnggnnnnn......',
+    '.....nnnnn.nnnnnnrrnnnn...',
+    '...nnnrrrnnnnnrrrrrrrnnn..',
+    '...nnnrrrnnnnnrrrrrrrrnn..',
+    '..nnrrrrrrrnnrrrrrrrrrrnn.',
+    '..nrrrrrrrrrrrnnccnrrrrrn.',
+    '.nnrrrnnncccnncccccnrrrrn.',
+    '.nrrrnccccccccccccccnnrrnn',
+    '.nrrrnccccccccccccccnnrrrn',
+    '.nrrrcccccccccccccccnnrrrn',
+    '.nrrnccccccccccccccccnnrrn',
+    '.nrrncccccccccccccccccnrrn',
+    '.nrrncpppccccccccpppccrrnn',
+    '.nnrrnpppccncncppppcnnrrn.',
+    '..nrrnpppccnnnccccccnnnrn.',
+    '..nnrrnncccccccccccrrnnn..',
+    '...nrnnnccccccccccnrrrnn..',
+    '...nnnrrncccccccccnrrrnnn.',
+    '....nnrrrnnnnrrnnnrrnnn...',
+    '....nnnnrrrrrrrrrrrnnn....',
+    '......nnnnnnnnnnnnnn......',
+    '..........................',
+    '..........................',
+    '..........................',
+  ], RINGOTCHI_PALETTE),
+  eyesOpen: gridToLayers([
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '.........ncc..ccn.........',
+    '.........nnn..nnn.........',
+    '.........nnn..nnn.........',
+    '.........nnn..nnn.........',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+    '..........................',
+  ], RINGOTCHI_PALETTE),
+  eyesClosed: [{ fill: '#1f4e8c', rects: [[9,12,3,1],[14,12,3,1]] }],
+  feet: { outline: '#1f4e8c', fill: '#fff6c8' },
+  feetLeft: [{fill: '#1f4e8c',rects:[[12,23,1,1],[11,24,1,1],[12,24,1,1],[11,25,1,1],[12,25,1,1]]}],
+  feetRight: [{fill: '#1f4e8c',rects:[[16,23,1,1],[16,24,1,1],[17,24,1,1],[16,25,1,1],[17,25,1,1]]}],
+  shadow: [[9,26,10,1]],
+  zzz: ZZZ,
 }
 
 const furawatchi: Sprite = {
